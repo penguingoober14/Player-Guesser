@@ -44,7 +44,7 @@ function shuffle(n) {
 function render() {
   const clubsEl = document.getElementById('clubs');
   const ansEl = document.getElementById('answer');
-  clubsEl.innerHTML = '';
+  clubsEl.replaceChildren();
   ansEl.style.display = 'none';
 
   const player = data[order[i]];
