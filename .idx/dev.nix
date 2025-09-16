@@ -5,7 +5,7 @@
     previews = {
       web = {
         manager = "web";
-        command = [ "python3" "-m" "http.server" "$PORT" ];
+        command = [ "python3" "-m" "http.server" "--bind" "127.0.0.1" "$PORT" ];
       };
     };
   };
