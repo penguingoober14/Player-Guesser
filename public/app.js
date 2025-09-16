@@ -75,6 +75,46 @@ let data = [];
 let order = [];
 let i = 0;
 
+const themeToggle = document.getElementById('theme-toggle');
+const body = document.body;
+const THEME_STORAGE_KEY = 'player-guesser-theme';
+const DARK_THEME = 'theme-dark';
+const LIGHT_THEME = 'theme-light';
+
+function persistTheme(theme) {
+  try {
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch (error) {
+    // Storage access can fail in some environments (e.g., disabled cookies).
+  }
+}
+
+function readStoredTheme() {
+  try {
+    return window.localStorage.getItem(THEME_STORAGE_KEY);
+  } catch (error) {
+    return null;
+  }
+}
+
+function updateToggleControl(theme) {
+  if (!themeToggle) return;
+  const isLight = theme === LIGHT_THEME;
+  const targetThemeLabel = isLight ? 'dark' : 'light';
+  const label = `Switch to ${targetThemeLabel} theme`;
+  themeToggle.textContent = label;
+  themeToggle.setAttribute('aria-label', label);
+  themeToggle.setAttribute('aria-pressed', String(isLight));
+}
+
+function applyTheme(theme) {
+  const nextTheme = theme === LIGHT_THEME ? LIGHT_THEME : DARK_THEME;
+  body.classList.remove(LIGHT_THEME, DARK_THEME);
+  body.classList.add(nextTheme);
+  updateToggleControl(nextTheme);
+  persistTheme(nextTheme);
+}
+
 function shuffle(n) {
   const a = Array.from({length: n}, (_, k) => k);
   for (let j = n - 1; j > 0; j--) {
@@ -110,6 +150,19 @@ document.getElementById('next').addEventListener('click', () => {
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+if (themeToggle) {
+  const stored = readStoredTheme();
+  const initialTheme = stored === LIGHT_THEME || stored === DARK_THEME
+    ? stored
+    : (body.classList.contains(LIGHT_THEME) ? LIGHT_THEME : DARK_THEME);
+  applyTheme(initialTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const nextTheme = body.classList.contains(DARK_THEME) ? LIGHT_THEME : DARK_THEME;
+    applyTheme(nextTheme);
+  });
+}
 
 loadPlayers().then((players) => {
   data = players;
