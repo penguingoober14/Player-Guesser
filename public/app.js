@@ -93,6 +93,7 @@ function render() {
   const player = data[order[i]];
   player.clubs.forEach((club) => {
     const li = document.createElement('li');
+    li.className = 'club-badge';
     li.textContent = club;
     clubsEl.appendChild(li);
   });
