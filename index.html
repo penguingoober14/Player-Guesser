@@ -78,15 +78,43 @@
       { name: "Player Three", clubs: ["Club D", "Club E", "Club F", "Club G"] }
     ];
 
+    const MAX_STRING_LENGTH = 120;
+
+    function sanitizePlayers(players) {
+      if (!Array.isArray(players)) return [];
+      const sanitized = [];
+
+      for (const entry of players) {
+        if (!entry || typeof entry !== 'object') continue;
+
+        const name = typeof entry.name === 'string' ? entry.name.trim() : '';
+        if (!name || name.length > MAX_STRING_LENGTH) continue;
+
+        const clubsSource = Array.isArray(entry.clubs) ? entry.clubs : [];
+        const clubs = clubsSource
+          .filter((club) => typeof club === 'string')
+          .map((club) => club.trim())
+          .filter((club) => club && club.length <= MAX_STRING_LENGTH);
+
+        if (!clubs.length) continue;
+
+        sanitized.push({ name, clubs });
+      }
+
+      return sanitized;
+    }
+
     async function loadPlayers() {
       try {
         const res = await fetch('data/players.json', { cache: 'no-store' });
         if (res.ok) {
           const json = await res.json();
-          if (Array.isArray(json) && json.length) return json;
+          const validPlayers = sanitizePlayers(json);
+          if (validPlayers.length) return validPlayers;
         }
       } catch (_) {}
-      return demo;
+      const fallback = sanitizePlayers(demo);
+      return fallback.length ? fallback : [];
     }
 
     let data = [];
