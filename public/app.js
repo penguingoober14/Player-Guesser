@@ -20,11 +20,54 @@ const demo = [
 async function loadPlayers() {
   try {
     const res = await fetch('data/players.json', { cache: 'no-store' });
-    if (res.ok) {
+    if (!res.ok) {
+      console.error(`Failed to fetch players.json: ${res.status} ${res.statusText}`);
+    } else {
       const json = await res.json();
-      if (Array.isArray(json) && json.length) return json;
+      if (!Array.isArray(json)) {
+        console.error('Invalid data format for players.json: expected an array.');
+      } else {
+        const sanitized = json.reduce((players, entry, index) => {
+          if (!entry || typeof entry !== 'object') {
+            console.error(`Invalid player entry at index ${index}: expected an object.`);
+            return players;
+          }
+
+          const { name, clubs } = entry;
+          if (typeof name !== 'string') {
+            console.error(`Invalid player name at index ${index}: expected a string.`);
+            return players;
+          }
+
+          if (!Array.isArray(clubs)) {
+            console.error(`Invalid clubs list for player "${name}" at index ${index}: expected an array.`);
+            return players;
+          }
+
+          const clubNames = clubs.filter((club, clubIndex) => {
+            const isString = typeof club === 'string';
+            if (!isString) {
+              console.error(`Invalid club entry for player "${name}" at index ${index}, club #${clubIndex}: expected a string.`);
+            }
+            return isString;
+          });
+
+          if (!clubNames.length) {
+            console.error(`Player "${name}" at index ${index} has no valid club entries.`);
+            return players;
+          }
+
+          players.push({ name, clubs: clubNames });
+          return players;
+        }, []);
+
+        if (sanitized.length) return sanitized;
+        console.error('No valid player entries found in players.json.');
+      }
     }
-  } catch (_) {}
+  } catch (error) {
+    console.error('Error loading players:', error);
+  }
   return demo;
 }
 
