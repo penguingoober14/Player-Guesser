@@ -23,6 +23,9 @@
       --card-light: #ffffff;
       --container-light: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
       --shadow-light: 0 16px 32px rgba(15, 23, 42, 0.12);
+      --club-chip-bg: rgba(99, 102, 241, 0.18);
+      --club-chip-border: rgba(99, 102, 241, 0.45);
+      --club-chip-fg: var(--fg-dark);
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; }
@@ -42,6 +45,9 @@
       --card: var(--card-dark);
       --container-bg: var(--container-dark);
       --container-shadow: var(--shadow-dark);
+      --club-chip-bg: rgba(99, 102, 241, 0.18);
+      --club-chip-border: rgba(99, 102, 241, 0.45);
+      --club-chip-fg: var(--fg-dark);
     }
     body.theme-light {
       --bg: var(--bg-light);
@@ -50,6 +56,9 @@
       --card: var(--card-light);
       --container-bg: var(--container-light);
       --container-shadow: var(--shadow-light);
+      --club-chip-bg: rgba(59, 130, 246, 0.12);
+      --club-chip-border: rgba(59, 130, 246, 0.28);
+      --club-chip-fg: var(--accent);
     }
     .container {
       width: 100%;
@@ -77,12 +86,16 @@
     }
     li { padding: 4px 0; }
     .club-badge {
-      display: inline-block;
-      padding: 4px 8px;
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 14px;
       border-radius: 9999px;
-      background: var(--card);
-      color: var(--fg);
-      margin: 4px;
+      background: var(--club-chip-bg);
+      color: var(--club-chip-fg);
+      border: 1px solid var(--club-chip-border);
+      font-weight: 600;
+      letter-spacing: .2px;
+      margin: 6px;
     }
     .controls { display: flex; gap: 10px; margin-top: 16px; }
     button {
@@ -112,8 +125,6 @@
       <h1>Guess the player from their clubs</h1>
       <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Switch to light theme">Switch to light theme</button>
     </div>
-    <p>Say your guess out loud. Then reveal. (Preview test)</p>
-
     <ol id="clubs" aria-live="polite"></ol>
 
     <div id="answer" aria-live="polite"></div>
@@ -123,7 +134,6 @@
       <button id="next" type="button" class="secondary">Next player</button>
     </div>
 
-    <div class="footer">Tip: add your own data in <code>data/players.json</code>.</div>
   </main>
 
   <script src="app.js" defer></script>
